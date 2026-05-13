@@ -1,165 +1,449 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI 활용 설문</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 720px;
-      margin: 40px auto;
-      padding: 24px;
-      background: #f4f8ff;
-      color: #222;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFIA - 반도체 연구직 AI 활용역량 진단</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-100: #805b00;
+            --primary-200: #b38835;
+            --primary-300: #ffe992;
+            --accent-100: #ffc941;
+            --accent-200: #926b00;
+            --text-100: #d3f1ff;
+            --text-200: #95cce7;
+            --bg-100: #023047;
+            --bg-200: #194058;
+            --bg-300: #365973;
+        }
 
-    .box {
-      background: white;
-      padding: 28px;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    }
+        body {
+            background-color: var(--bg-100);
+            color: var(--text-100);
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            overflow-x: hidden;
+        }
 
-    label {
-      display: block;
-      margin-top: 18px;
-      font-weight: bold;
-    }
+        .main-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-    }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
 
-    button {
-      margin-top: 28px;
-      width: 100%;
-      padding: 14px;
-      background: #2f80ed;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+        .animate-title {
+            animation: fadeInRight 1s ease-out forwards;
+        }
 
-    button:hover {
-      background: #1f6ed4;
-    }
+        .btn-primary {
+            background-color: var(--primary-200);
+            color: white;
+            transition: all 0.3s ease;
+        }
 
-    #result {
-      margin-top: 24px;
-      font-weight: bold;
-      text-align: center;
-    }
-  </style>
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-100);
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-100);
+            color: var(--bg-100);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent:hover:not(:disabled) {
+            background-color: var(--primary-300);
+            box-shadow: 0 0 15px rgba(255, 201, 65, 0.4);
+        }
+
+        .progress-bar {
+            background-color: var(--bg-300);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: var(--accent-100);
+            height: 100%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card {
+            background-color: var(--bg-200);
+            border: 1px solid var(--bg-300);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .scale-option {
+            border: 2px solid var(--bg-300);
+            transition: all 0.2s ease;
+        }
+
+        .scale-option:hover {
+            border-color: var(--primary-300);
+            background-color: rgba(255, 233, 146, 0.1);
+        }
+
+        input[type="radio"]:checked + label {
+            background-color: var(--accent-100);
+            color: var(--bg-100);
+            border-color: var(--accent-100);
+        }
+
+        .hidden { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(2, 48, 71, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--bg-100);
+            animation: spin 1s linear infinite;
+        }
+
+        input::placeholder { color: var(--text-200); opacity: 0.6; }
+    </style>
 </head>
-<body>
+<body class="p-4">
 
-  <div class="box">
-    <h1>AI 활용 설문</h1>
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full flex justify-between items-center px-8 py-4 bg-[#011c2a] z-50">
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="location.reload()">
+            <div class="w-10 h-10 bg-white rounded flex items-center justify-center font-bold text-xs text-[#023047] p-1 text-center transition-transform group-hover:scale-105">
+                KFIA
+            </div>
+            <div class="text-xl font-bold tracking-tight transition-colors group-hover:text-white" style="color: var(--primary-300);">
+                한국팹리스산업협회
+            </div>
+        </div>
+        <div class="flex gap-6 text-sm font-medium">
+            <a href="#" style="color: var(--text-200);">로그인</a>
+            <a href="#" style="color: var(--text-200);">회원가입</a>
+        </div>
+    </header>
 
-    <form id="surveyForm">
-      <label>이름</label>
-      <input type="text" name="name" required />
+    <div class="main-wrapper pt-20">
+        <div class="w-full max-w-3xl mx-auto">
+            
+            <!-- Intro Section -->
+            <section id="intro-section" class="text-center px-4">
+                <h1 class="text-3xl md:text-5xl font-black mb-6 animate-title whitespace-nowrap overflow-hidden" style="color: var(--accent-100); line-height: 1.5;">
+                    반도체 연구직 AI 활용역량 진단
+                </h1>
+                <p class="text-lg md:text-xl mb-10 leading-relaxed" style="color: var(--text-200);">
+                    반도체 산업의 미래 경쟁력, 연구원님의 AI 역량에서 시작됩니다.<br>
+                    정밀 진단을 통해 최적의 학습 로드맵을 확인하세요.
+                </p>
+                <button onclick="startSurvey()" class="px-10 py-4 rounded-xl font-bold text-lg btn-accent shadow-xl">
+                    진단 시작하기
+                </button>
+            </section>
 
-      <label>소속/부서</label>
-      <input type="text" name="dept" required />
+            <!-- Survey Section -->
+            <section id="survey-section" class="hidden w-full px-4">
+                <div class="mb-10">
+                    <div class="flex justify-between items-end mb-3">
+                        <span class="text-sm font-bold uppercase tracking-wider" style="color: var(--primary-300);">Progress</span>
+                        <span class="text-sm font-bold" style="color: var(--accent-100);"><span id="current-step">1</span> / 10</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 10%;"></div>
+                    </div>
+                </div>
 
-      <label>이메일</label>
-      <input type="email" name="email" required />
+                <div id="question-container" class="card p-8 md:p-12 mb-8 text-center">
+                    <h2 id="question-text" class="text-xl md:text-2xl font-bold mb-12 leading-snug" style="color: var(--text-100);">
+                        질문을 불러오는 중입니다...
+                    </h2>
+                    
+                    <div class="grid grid-cols-5 gap-3">
+                        <div class="flex flex-col items-center">
+                            <input type="radio" name="score" id="s1" value="1" class="hidden">
+                            <label for="s1" class="w-full py-5 text-center rounded-xl cursor-pointer scale-option font-black text-xl">1</label>
+                            <span class="text-xs mt-3 font-medium" style="color: var(--text-200);">전혀 아니다.</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <input type="radio" name="score" id="s2" value="2" class="hidden">
+                            <label for="s2" class="w-full py-5 text-center rounded-xl cursor-pointer scale-option font-black text-xl">2</label>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <input type="radio" name="score" id="s3" value="3" class="hidden">
+                            <label for="s3" class="w-full py-5 text-center rounded-xl cursor-pointer scale-option font-black text-xl">3</label>
+                            <span class="text-xs mt-3 font-medium" style="color: var(--text-200);">보통이다.</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <input type="radio" name="score" id="s4" value="4" class="hidden">
+                            <label for="s4" class="w-full py-5 text-center rounded-xl cursor-pointer scale-option font-black text-xl">4</label>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <input type="radio" name="score" id="s5" value="5" class="hidden">
+                            <label for="s5" class="w-full py-5 text-center rounded-xl cursor-pointer scale-option font-black text-xl">5</label>
+                            <span class="text-xs mt-3 font-medium" style="color: var(--text-200);">매우 그렇다.</span>
+                        </div>
+                    </div>
+                </div>
 
-      <label>1. 생성형 AI를 업무에 활용해 본 경험이 있습니까?</label>
-      <select name="q1" required>
-        <option value="">선택하세요</option>
-        <option value="1">전혀 없다</option>
-        <option value="2">조금 있다</option>
-        <option value="3">보통이다</option>
-        <option value="4">자주 활용한다</option>
-        <option value="5">매우 적극적으로 활용한다</option>
-      </select>
+                <div class="flex justify-between gap-4">
+                    <button id="prev-btn" onclick="prevQuestion()" class="flex-1 py-4 rounded-xl font-bold border-2 border-[#365973] text-[#95cce7] hover:bg-[#194058] disabled:opacity-30">
+                        이전 단계
+                    </button>
+                    <button id="next-btn" onclick="nextQuestion()" class="flex-1 py-4 rounded-xl font-bold btn-primary shadow-lg">
+                        다음 단계
+                    </button>
+                </div>
+            </section>
 
-      <label>2. 생성형 AI 교육이 업무에 도움이 될 것 같습니까?</label>
-      <select name="q2" required>
-        <option value="">선택하세요</option>
-        <option value="1">전혀 그렇지 않다</option>
-        <option value="2">그렇지 않다</option>
-        <option value="3">보통이다</option>
-        <option value="4">그렇다</option>
-        <option value="5">매우 그렇다</option>
-      </select>
+            <!-- User Info Section -->
+            <section id="user-info-section" class="hidden w-full px-4">
+                <div class="card p-8 md:p-10 mb-8">
+                    <h2 class="text-2xl font-bold mb-8 text-center" style="color: var(--accent-100);">결과 리포트 수령 정보</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-1" style="color: var(--text-200);">성함</label>
+                            <input type="text" id="user-name" placeholder="성함을 입력하세요" class="w-full p-4 bg-[#0a3a52] border border-[#365973] rounded-xl focus:outline-none focus:border-[#ffc941] text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-1" style="color: var(--text-200);">부서 / 직무</label>
+                            <select id="user-dept" class="w-full p-4 bg-[#0a3a52] border border-[#365973] rounded-xl focus:outline-none focus:border-[#ffc941] text-white appearance-none">
+                                <option value="">직무를 선택하세요</option>
+                                <option value="설계">반도체 설계 (Architecture/Logic)</option>
+                                <option value="공정">공정 개발 (Process Integration)</option>
+                                <option value="소자">소자/모델링 (Device/Modeling)</option>
+                                <option value="레이아웃">레이아웃 (Layout/Physical Design)</option>
+                                <option value="검증">검증/테스트 (Verification/Test)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-1" style="color: var(--text-200);">이메일 주소</label>
+                            <input type="email" id="user-email" placeholder="example@kfia.or.kr" class="w-full p-4 bg-[#0a3a52] border border-[#365973] rounded-xl focus:outline-none focus:border-[#ffc941] text-white">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 p-4 bg-[#0a3a52] rounded-xl border border-[#365973]">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="privacy-check" class="w-5 h-5 rounded border-gray-300 text-[#ffc941] focus:ring-0">
+                            <span class="text-sm text-gray-300">
+                                개인정보 수집 및 활용에 동의합니다.
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <button id="final-submit-btn" onclick="showResult()" class="w-full py-5 rounded-2xl font-black text-xl btn-accent shadow-2xl flex items-center justify-center gap-3">
+                    <span id="btn-text">진단 결과 확인하기</span>
+                    <div id="loading-spinner" class="spinner hidden"></div>
+                </button>
+            </section>
 
-      <button type="submit">제출하기</button>
-    </form>
+            <!-- Result Section -->
+            <section id="result-section" class="hidden w-full px-4">
+                <div class="card p-8 md:p-12 text-center" id="printable-area">
+                    <p class="text-lg font-medium mb-2" style="color: var(--text-200);"><span id="res-name" class="text-white font-bold">홍길동</span> 연구원님의 역량 지수</p>
+                    <div class="text-7xl font-black mb-6" style="color: var(--accent-100);"><span id="total-score">0</span><span class="text-2xl opacity-60"> / 50</span></div>
+                    
+                    <div class="inline-block px-8 py-3 rounded-full text-[#023047] font-black text-lg mb-8" id="type-badge" style="background-color: var(--accent-100);">
+                        진단 결과
+                    </div>
 
-    <div id="result"></div>
-  </div>
+                    <div class="bg-[#0a3a52] p-8 rounded-2xl text-left border-l-8 mb-10" style="border-color: var(--accent-100);">
+                        <h3 class="font-bold text-xl mb-3 text-white">유형 분석</h3>
+                        <p id="type-desc" class="text-gray-300 leading-relaxed text-lg"></p>
+                    </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxA2rZ27K69Euy8-PXq7i4Sm1mE8kd5orV_3xhc4tR-IXV9wkdAwCJI4pwLTzReeMFu/exec";
+                    <div class="text-left">
+                        <h3 class="font-bold text-xl mb-6 flex items-center gap-3" style="color: var(--primary-300);">
+                            추천 교육 로드맵
+                        </h3>
+                        <div id="edu-card" class="p-8 rounded-2xl bg-[#0a3a52] border border-[#365973]">
+                            <h4 id="edu-title" class="font-black text-xl mb-4" style="color: var(--accent-100);"></h4>
+                            <ul id="edu-list" class="space-y-3 text-gray-300"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+                    <button onclick="location.reload()" class="py-4 border-2 border-[#365973] rounded-xl font-bold text-[#95cce7] hover:bg-[#194058]">
+                        다시 진단
+                    </button>
+                    <button onclick="window.print()" class="py-4 btn-primary rounded-xl font-bold">
+                        PDF로 인쇄
+                    </button>
+                    <button onclick="downloadPage()" class="col-span-2 md:col-span-1 py-4 btn-accent rounded-xl font-bold text-[#023047]">
+                        HTML 리포트 저장
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
 
-    document.getElementById("surveyForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
+    <footer class="mt-20 py-8 text-center text-xs opacity-40" style="color: var(--text-200);">
+        © 2024 한국팹리스산업협회(KFIA) All Rights Reserved.
+    </footer>
 
-      const form = e.target;
+    <script>
+        // 새로운 구글 앱스 스크립트 웹앱 URL로 변경되었습니다.
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw_g_xe-cECiOjFx1gq4xd5GzCJfhLMnYkyHmWXwLUUmdg2StUsf9NZ5PrlvoG-vh4D/exec";
 
-      const q1 = Number(form.q1.value);
-      const q2 = Number(form.q2.value);
-      const total = q1 + q2;
+        const questions = [
+            "데이터 리터러시: 실험 데이터나 공정 로그를 목적에 맞게 전처리하고 구조화할 수 있다.",
+            "도구 활용성: ChatGPT, Claude 등 생성형 AI를 활용해 연구 동향 조사 시간을 단축하고 있다.",
+            "코드 구현 역량: Python 등을 활용하여 반복적인 데이터 분석 업무를 자동화하는 스크립트를 작성할 수 있다.",
+            "AI 모델 이해도: 수율 예측, 결함 분류 등 업무에 적합한 AI 알고리즘을 선택할 수 있다.",
+            "프롬프트 엔지니어링: AI로부터 원하는 결과를 얻기 위해 체계적인 지시어를 설계할 수 있다.",
+            "시뮬레이션 최적화: 가상 시뮬레이션 결과와 실제 데이터를 비교 분석하는 데 AI를 활용해 본 적이 있다.",
+            "문제 해결 적용: 연구 중 마주치는 병목 현상을 해결하기 위해 AI 도입 가능성을 검토할 수 있다.",
+            "윤리 및 보안: 연구 데이터 유출 방지를 위한 보안 가이드를 준수하며 AI를 안전하게 사용하고 있다.",
+            "협업 및 소통: AI 전문가와 기술적 요구사항에 대해 명확하게 소통할 수 있다.",
+            "지속적 학습: 반도체 특화 최신 AI 기술(PINNs 등)에 관심을 갖고 학습한다."
+        ];
 
-      let type = "";
-      if (total >= 8) {
-        type = "AI 활용 적극형";
-      } else if (total >= 5) {
-        type = "AI 활용 관심형";
-      } else {
-        type = "AI 활용 입문형";
-      }
+        let currentStep = 1;
+        let answers = Array(10).fill(null);
 
-      const data = {
-        name: form.name.value,
-        dept: form.dept.value,
-        email: form.email.value,
-        q1: q1,
-        q2: q2,
-        q3: "",
-        q4: "",
-        q5: "",
-        q6: "",
-        q7: "",
-        q8: "",
-        q9: "",
-        q10: "",
-        total: total,
-        type: type,
-        edu: ""
-      };
+        function startSurvey() {
+            document.getElementById('intro-section').classList.add('hidden');
+            document.getElementById('survey-section').classList.remove('hidden');
+            updateQuestion();
+        }
 
-      try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        });
+        function updateQuestion() {
+            document.getElementById('question-text').innerText = questions[currentStep - 1];
+            document.getElementById('current-step').innerText = currentStep;
+            document.getElementById('progress-fill').style.width = `${currentStep * 10}%`;
+            document.getElementById('prev-btn').disabled = currentStep === 1;
+            
+            const radios = document.getElementsByName('score');
+            radios.forEach(radio => {
+                radio.checked = parseInt(radio.value) === answers[currentStep - 1];
+            });
+            document.getElementById('next-btn').innerText = currentStep === 10 ? "진단 완료" : "다음 단계";
+        }
 
-        document.getElementById("result").innerText =
-          "제출이 완료되었습니다. 결과 유형: " + type;
+        function nextQuestion() {
+            const selected = document.querySelector('input[name="score"]:checked');
+            if (!selected) { alert("답변을 선택해 주세요."); return; }
+            answers[currentStep - 1] = parseInt(selected.value);
+            if (currentStep < 10) { currentStep++; updateQuestion(); } 
+            else {
+                document.getElementById('survey-section').classList.add('hidden');
+                document.getElementById('user-info-section').classList.remove('hidden');
+            }
+        }
 
-        form.reset();
+        function prevQuestion() {
+            if (currentStep > 1) { currentStep--; updateQuestion(); }
+        }
 
-      } catch (error) {
-        document.getElementById("result").innerText =
-          "제출 중 오류가 발생했습니다.";
-      }
-    });
-  </script>
+        async function showResult() {
+            const name = document.getElementById('user-name').value.trim();
+            const dept = document.getElementById('user-dept').value;
+            const email = document.getElementById('user-email').value.trim();
+            const agree = document.getElementById('privacy-check').checked;
 
+            if (!name || !dept || !email) { alert("정보를 모두 입력해 주세요."); return; }
+            if (!agree) { alert("개인정보 수집 및 활용에 동의해 주세요."); return; }
+
+            const btn = document.getElementById('final-submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const spinner = document.getElementById('loading-spinner');
+            btn.disabled = true;
+            btnText.innerText = "데이터 저장 중...";
+            spinner.classList.remove('hidden');
+
+            const total = answers.reduce((a, b) => a + b, 0);
+            let type, desc, eduTitle, eduList;
+
+            if (total <= 20) {
+                type = "AI 탐험가 (Explorer)";
+                desc = "AI 기술의 가능성은 인지하고 있으나, 실무 적용을 위한 도구 습득이 필요한 단계입니다.";
+                eduTitle = "AI와 친해지기 기초 과정";
+                eduList = ["생성형 AI(ChatGPT, Claude) 기초 사용법", "반도체 산업의 AI 적용 사례 세미나"];
+            } else if (total <= 30) {
+                type = "AI 실무 적용자 (Operator)";
+                desc = "생성형 AI를 연구 보조 도구로 활용할 수 있으며 기초적인 데이터 핸들링이 가능합니다.";
+                eduTitle = "업무 효율화 스킬업 과정";
+                eduList = ["업무용 프롬프트 엔지니어링 심화", "엑셀을 대체하는 기초 Python 데이터 분석"];
+            } else if (total <= 40) {
+                type = "AI 분석 전문가 (Analyzer)";
+                desc = "반도체 도메인 데이터를 이해하고 ML 알고리즘을 통해 수율 및 성능을 예측할 수 있습니다.";
+                eduTitle = "데이터 기반 의사결정 심화 과정";
+                eduList = ["머신러닝 알고리즘 실습", "Computer Vision 기반 결함 탐지 기술"];
+            } else {
+                type = "AI 혁신 리더 (Innovator)";
+                desc = "최신 AI 방법론을 반도체 공정에 결합하여 새로운 가치를 창출할 수 있는 최고 전문가 수준입니다.";
+                eduTitle = "도메인 특화 AI 아키텍처 과정";
+                eduList = ["PINNs (물리 기반 신경망) 활용법", "Bayesian Optimization 공정 최적화"];
+            }
+
+            const payload = {
+                name: name, dept: dept, email: email,
+                q1: answers[0], q2: answers[1], q3: answers[2], q4: answers[3], q5: answers[4],
+                q6: answers[5], q7: answers[6], q8: answers[7], q9: answers[8], q10: answers[9],
+                total: total, type: type, edu: eduTitle, privacy: "Y"
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+
+                document.getElementById('total-score').innerText = total;
+                document.getElementById('res-name').innerText = name;
+                document.getElementById('type-badge').innerText = type;
+                document.getElementById('type-desc').innerText = desc;
+                document.getElementById('edu-title').innerText = eduTitle;
+                
+                const listEl = document.getElementById('edu-list');
+                listEl.innerHTML = "";
+                eduList.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = "flex items-start gap-2";
+                    li.innerHTML = `<span class="mt-1.5 w-2 h-2 rounded-full bg-[#ffc941] shrink-0"></span><span>${item}</span>`;
+                    listEl.appendChild(li);
+                });
+
+                document.getElementById('user-info-section').classList.add('hidden');
+                document.getElementById('result-section').classList.remove('hidden');
+                window.scrollTo(0, 0);
+
+            } catch (error) {
+                console.error("Error saving data:", error);
+                alert("저장 오류가 발생했습니다.");
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = "진단 결과 확인하기";
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function downloadPage() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `KFIA_AI_진단리포트_${document.getElementById('res-name').innerText || '연구원'}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
 </body>
 </html>
